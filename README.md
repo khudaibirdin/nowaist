@@ -29,7 +29,7 @@
 * работа со статикой
 * взаимодействует с данными по gRPC в сервис данных (адаптер Nowaist Server), является клиентом
 
-## Nowaist Server
+## [Nowaist Server](https://github.com/khudaibirdin/nowaist_server)
 * работа с данными по gRPC, получает и отдает данные, является сервером
 * взаимодействует с БД через sqlc
 
