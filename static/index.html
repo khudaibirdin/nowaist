@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html lang="ru">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Учет сбережений</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f5f5f5;
+        }
+
+        /* Стили для страницы авторизации */
+        .auth-page {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .auth-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .auth-title {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+
+        .auth-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .auth-btn:hover {
+            background-color: #45a049;
+        }
+
+        .auth-link {
+            text-align: center;
+            margin-top: 16px;
+            color: #666;
+        }
+
+        .auth-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .auth-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для страницы регистрации */
+        .register-page {
+            display: none;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f5f5f5;
+        }
+
+        .register-container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .register-title {
+            text-align: center;
+            margin-bottom: 24px;
+            color: #333;
+        }
+
+        .register-form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .register-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+
+        .register-btn:hover {
+            background-color: #45a049;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 16px;
+            color: #666;
+        }
+
+        .register-link a {
+            color: #4CAF50;
+            text-decoration: none;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Стили для основного приложения */
+        .app-container {
+            display: none;
+            padding: 20px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header h1 {
+            color: #333;
+        }
+
+        .logout-btn {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .logout-btn:hover {
+            background-color: #d32f2f;
+        }
+
+        .content {
+            display: flex;
+            gap: 20px;
+        }
+
+        .form-section {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .chart-section {
+            flex: 1;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .bank-section {
+            border: 1px solid #eee;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+
+        .bank-title {
+            margin-top: 0;
+            color: #444;
+            font-size: 18px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        #response {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 4px;
+            display: none;
+        }
+
+        .success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+
+        .error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+
+        #historyChart {
+            width: 100%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Страница авторизации -->
+    <div class="auth-page" id="authPage">
+        <div class="auth-container">
+            <h2 class="auth-title">Авторизация</h2>
+            <form id="authForm" class="auth-form">
+                <div class="form-group">
+                    <label for="login">Логин:</label>
+                    <input type="text" id="login" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Пароль:</label>
+                    <input type="password" id="password" required>
+                </div>
+                <button type="submit" class="auth-btn">Войти</button>
+                <div class="auth-link">
+                    Нет аккаунта? <a href="#" id="showRegister">Зарегистрироваться</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Страница регистрации -->
+    <div class="register-page" id="registerPage">
+        <div class="register-container">
+            <h2 class="register-title">Регистрация</h2>
+            <form id="registerForm" class="register-form">
+                <div class="form-group">
+                    <label for="regLogin">Логин:</label>
+                    <input type="text" id="regLogin" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Пароль:</label>
+                    <input type="password" id="regPassword" required>
+                </div>
+                <div class="form-group">
+                    <label for="regConfirmPassword">Подтвердите пароль:</label>
+                    <input type="password" id="regConfirmPassword" required>
+                </div>
+                <button type="submit" class="register-btn">Зарегистрироваться</button>
+                <div class="register-link">
+                    Уже есть аккаунт? <a href="#" id="showAuth">Войти</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Основное приложение -->
+    <div class="app-container" id="appContainer">
+        <div class="header">
+            <h1>Учет сбережений</h1>
+            <button id="logoutBtn" class="logout-btn">Выйти</button>
+        </div>
+
+        <div class="content">
+            <div class="form-section">
+                <form id="savingsForm">
+                    <div class="bank-section">
+                        <h3 class="bank-title">Дата</h3>
+                        <input type="date" id="date">
+                    </div>
+                    <div class="bank-section">
+                        <h3 class="bank-title">Сбербанк</h3>
+                        <input type="text" id="sber_card" placeholder="Сумма на карте">
+                        <input type="text" id="sber_bill" placeholder="Сумма на счете">
+                        <input type="text" id="sber_invest" placeholder="Сумма в инвестициях">
+                    </div>
+
+                    <div class="bank-section">
+                        <h3 class="bank-title">Тинькофф</h3>
+                        <input type="text" id="tinkoff_card" placeholder="Сумма на карте">
+                        <input type="text" id="tinkoff_bill" placeholder="Сумма на счете">
+                        <input type="text" id="tinkoff_invest" placeholder="Сумма в инвестициях">
+                    </div>
+
+                    <div class="bank-section">
+                        <h3 class="bank-title">Наличные</h3>
+                        <input type="text" id="cash" placeholder="Сумма наличных" required>
+                    </div>
+                    <button type="submit" class="submit-btn">Отправить данные</button>
+                </form>
+
+                <div id="response"></div>
+            </div>
+
+            <div class="chart-section">
+                <h2>История изменений</h2>
+                <canvas id="historyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Инициализация графика
+        const ctx = document.getElementById('historyChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                datasets: [{
+                    label: 'Общая сумма сбережений',
+                    data: [],
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1,
+                    fill: false
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: false,
+                        title: {
+                            display: true,
+                            text: 'Сумма'
+                        }
+                    },
+                    x: {
+                        type: 'time',
+                        time: {
+                            unit: 'day',
+                            displayFormats: {
+                                day: 'dd.MM.yyyy'
+                            },
+                            tooltipFormat: 'dd.MM.yyyy'
+                        },
+                        title: {
+                            display: true,
+                            text: 'Дата'
+                        }
+                    }
+                }
+            }
+        });
+
+        // Элементы страниц
+        const authPage = document.getElementById('authPage');
+        const registerPage = document.getElementById('registerPage');
+        const appContainer = document.getElementById('appContainer');
+        const authForm = document.getElementById('authForm');
+        const registerForm = document.getElementById('registerForm');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const savingsForm = document.getElementById('savingsForm');
+        const showRegister = document.getElementById('showRegister');
+        const showAuth = document.getElementById('showAuth');
+
+        // Токен авторизации
+        let authToken = localStorage.getItem('authToken');
+
+        // Проверка авторизации при загрузке страницы
+        document.addEventListener('DOMContentLoaded', function () {
+            // Сначала скрываем все страницы
+            authPage.style.display = 'none';
+            registerPage.style.display = 'none';
+            appContainer.style.display = 'none';
+
+            if (authToken) {
+                // Если есть токен, проверяем его валидность
+                verifyToken(authToken);
+            } else {
+                // Если токена нет, показываем страницу авторизации
+                authPage.style.display = 'flex';
+            }
+        });
+
+        // Переключение между страницами авторизации и регистрации
+        showRegister.addEventListener('click', function (e) {
+            e.preventDefault();
+            authPage.style.display = 'none';
+            registerPage.style.display = 'flex';
+        });
+
+        showAuth.addEventListener('click', function (e) {
+            e.preventDefault();
+            registerPage.style.display = 'none';
+            authPage.style.display = 'flex';
+        });
+
+        // Обработчик формы авторизации
+        authForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const login = document.getElementById('login').value;
+            const password = document.getElementById('password').value;
+
+            // Отправляем запрос на авторизацию
+            fetch('/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ login, password })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка авторизации');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (data.token) {
+                        // Сохраняем токен
+                        authToken = data.token;
+                        localStorage.setItem('authToken', authToken);
+
+                        // Скрываем страницу авторизации
+                        authPage.style.display = 'none';
+
+                        // Показываем основное приложение
+                        appContainer.style.display = 'block';
+
+                        // Загружаем данные
+                        loadHistoryData();
+                    }
+                })
+                .catch(error => {
+                    showResponse('Ошибка авторизации: ' + error.message, false);
+                    console.error('Error:', error);
+                });
+        });
+
+        // Обработчик формы регистрации
+        registerForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const login = document.getElementById('regLogin').value;
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                showResponse('Пароли не совпадают', false, registerPage);
+                return;
+            }
+
+            // Отправляем запрос на регистрацию
+            fetch('/auth/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ login, password })
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Ошибка регистрации');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showResponse('Регистрация прошла успешно! Теперь вы можете войти.', true, registerPage);
+                    // Переключаем на страницу авторизации
+                    registerPage.style.display = 'none';
+                    authPage.style.display = 'flex';
+                    // Очищаем форму
+                    registerForm.reset();
+                })
+                .catch(error => {
+                    showResponse('Ошибка регистрации: ' + error.message, false, registerPage);
+                    console.error('Error:', error);
+                });
+        });
+
+        // Обработчик выхода
+        logoutBtn.addEventListener('click', function () {
+            // Удаляем токен
+            localStorage.removeItem('authToken');
+            authToken = null;
+
+            // Скрываем основное приложение
+            appContainer.style.display = 'none';
+
+            // Показываем страницу авторизации
+            authPage.style.display = 'flex';
+
+            // Очищаем график
+            chart.data.datasets[0].data = [];
+            chart.update();
+        });
+
+        // Функция проверки токена
+        function verifyToken(token) {
+            fetch('/auth/verify', {
+                method: 'POST',
+                headers: {
+                    'Authorization': 'Bearer ' + token,
+                    'Content-Type': 'application/json',
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        // Если токен недействителен, удаляем его из localStorage
+                        localStorage.removeItem('authToken');
+                        authToken = null;
+                        throw new Error('Токен недействителен');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Если токен валиден, показываем основное приложение
+                    authPage.style.display = 'none';
+                    registerPage.style.display = 'none';
+                    appContainer.style.display = 'block';
+                    loadHistoryData();
+                })
+                .catch(error => {
+                    // Если ошибка, показываем страницу авторизации
+                    localStorage.removeItem('authToken');
+                    authToken = null;
+                    authPage.style.display = 'flex';
+                    console.error('Error:', error);
+                });
+        }
+
+        function loadHistoryData() {
+            if (!authToken) {
+                console.error('Нет токена авторизации');
+                return;
+            }
+
+            fetch('/savings/summarized', {
+                headers: {
+                    'Authorization': 'Bearer ' + authToken
+                }
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Токен недействителен - разлогиниваем
+                            localStorage.removeItem('authToken');
+                            authToken = null;
+                            appContainer.style.display = 'none';
+                            authPage.style.display = 'flex';
+                        }
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Ограничиваем количество точек до 100
+                    const limitedData = data.data.slice(-100);
+
+                    // Сортируем данные по дате (от старых к новым)
+                    limitedData.sort((a, b) => new Date(a.date_create) - new Date(b.date_create));
+
+                    // Преобразуем данные для графика
+                    const chartData = limitedData.map(item => ({
+                        x: new Date(item.date_create),
+                        y: item.value
+                    }));
+
+                    // Обновляем график
+                    chart.data.datasets[0].data = chartData;
+                    chart.update();
+                })
+                .catch(error => {
+                    console.error('Ошибка при загрузке исторических данных:', error);
+                });
+        }
+
+        // Обработчик формы сохранения данных
+        savingsForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            const formData = {
+                savings: [
+                    { group_name: 'sber_card', value: parseInt(document.getElementById('sber_card').value) || 0 },
+                    { group_name: 'sber_bill', value: parseInt(document.getElementById('sber_bill').value) || 0 },
+                    { group_name: 'sber_invest', value: parseInt(document.getElementById('sber_invest').value) || 0 },
+                    { group_name: 'tinkoff_card', value: parseInt(document.getElementById('tinkoff_card').value) || 0 },
+                    { group_name: 'tinkoff_bill', value: parseInt(document.getElementById('tinkoff_bill').value) || 0 },
+                    { group_name: 'tinkoff_invest', value: parseInt(document.getElementById('tinkoff_invest').value) || 0 },
+                    { group_name: 'cash', value: parseInt(document.getElementById('cash').value) || 0 },
+                ],
+                date: document.getElementById('date').value
+            };
+
+            fetch('/savings', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + authToken
+                },
+                body: JSON.stringify(formData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        if (response.status === 401) {
+                            // Токен недействителен - разлогиниваем
+                            localStorage.removeItem('authToken');
+                            authToken = null;
+                            appContainer.style.display = 'none';
+                            authPage.style.display = 'flex';
+                        }
+                        throw new Error('Ошибка сети');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    showResponse('Данные успешно сохранены!', true);
+                    savingsForm.reset();
+
+                    // Обновляем график после сохранения новых данных
+                    loadHistoryData();
+                })
+                .catch(error => {
+                    showResponse('Ошибка при сохранении данных: ' + error.message, false);
+                    console.error('Error:', error);
+                });
+        });
+
+        function showResponse(message, isSuccess, parentElement = appContainer) {
+            // Находим или создаем элемент для отображения сообщения
+            let responseDiv = document.getElementById('response');
+            if (!responseDiv) {
+                responseDiv = document.createElement('div');
+                responseDiv.id = 'response';
+                parentElement.appendChild(responseDiv);
+            }
+
+            responseDiv.textContent = message;
+            responseDiv.className = isSuccess ? 'success' : 'error';
+            responseDiv.style.display = 'block';
+
+            setTimeout(() => {
+                responseDiv.style.display = 'none';
+            }, 5000);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,64 @@
+syntax = "proto3";
+
+package grpc_service;
+
+option go_package = "app/pkg/api/grpc_service";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/empty.proto"; 
+
+service WaistService {
+    rpc SetWaists(SetWaistsRequest) returns (google.protobuf.Empty);
+    rpc GetLastWaists(GetLastWaistsRequest) returns (GetLastWaistsResponse);
+    rpc CreateUser(CreateUserRequest) returns (CreateUserResponse);
+    rpc GetUser(GetUserRequest) returns (GetUserResponse);
+}
+
+// SetWaists
+message SetWaistsRequest {
+    repeated Waist waists = 1;
+    google.protobuf.Timestamp date_created = 2;
+    int64 user_id = 3;
+}
+
+message Waist {
+    string group_name = 1;
+    int64 value = 2;
+}
+
+// GetLastWaists
+message GetLastWaistsRequest {
+    int64 amount = 1;
+    int64 user_id = 2;
+}
+
+message GetLastWaistsResponse {
+    repeated Waists waists = 1;
+}
+
+message Waists {
+    repeated Waist waists = 1;
+    google.protobuf.Timestamp DateCreated = 2;
+}
+
+// CreateUser
+message CreateUserRequest {
+    string login = 1;
+    string password = 2;
+}
+
+message CreateUserResponse {
+    int64 id = 1;
+    string login = 2;
+}
+
+// GetUser
+message GetUserRequest {
+    string login = 1;
+}
+
+message GetUserResponse {
+    int64 id = 1;
+    string login = 2;
+    string password = 3;
+}

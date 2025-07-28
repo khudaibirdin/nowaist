@@ -1,0 +1,16 @@
+@startuml Structure
+!include https://raw.githubusercontent.com/plantuml-stdlib/C4-PlantUML/master/C4_Container.puml
+
+Person(user, "Пользователь")
+
+System_Boundary(app, "Приложение"){
+    Container(nowaist, "Nowaist User", "Go, HTTP, gRPC", "Пользовательский Rest API, статика, межсервисное по gRPC")
+    Container(nowaist_server, "Nowaist Server", "Go, gRPC, sqlc", "Получение данных по gRPC, взаимодействие с sqlite")
+    ContainerDb(database, "sqlite", "Работа с данными")
+}
+
+Rel(user, nowaist, "Авторизация, регистрация, взаимодействие с данными", "UI")
+Rel_R(nowaist, nowaist_server, "Отправка данных в сервис данных", "gRPC")
+Rel(nowaist_server, database, "Взаимодействие с БД", "SQL")
+
+@enduml
